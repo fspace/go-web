@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/fspace/go-web/models"
 )
 
 var r = mux.NewRouter()
@@ -47,12 +49,29 @@ func main() {
 		}
 		t.ExecuteTemplate(w, "layout", "")
 	})
+	tmpl := template.Must(template.ParseFiles("views/layout.html", "views/contact.html"))
 	r.HandleFunc("/contact", func(w http.ResponseWriter, r *http.Request) {
-		t, err := template.ParseFiles("views/layout.html", "views/contact.html")
-		if err != nil {
-			log.Fatal(err)
+		//t, err := template.ParseFiles("views/layout.html", "views/contact.html")
+		//if err != nil {
+		//	log.Fatal(err)
+		//}
+		//t.ExecuteTemplate(w, "layout", "")
+		if r.Method != http.MethodPost {
+			tmpl.ExecuteTemplate(w, "layout", nil)
+			return
 		}
-		t.ExecuteTemplate(w, "layout", "")
+
+		details := models.ContactDetails{
+			Email:   r.FormValue("email"),
+			Subject: r.FormValue("subject"),
+			Message: r.FormValue("message"),
+		}
+
+		// do something with details
+		_ = details
+
+		log.Println(tmpl.Name())
+		tmpl.ExecuteTemplate(w, "layout", struct{ Success bool }{true})
 	})
 
 	r.HandleFunc("/hello/{title}", helloHandler).Methods("GET")
