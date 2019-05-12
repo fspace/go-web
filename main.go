@@ -1,13 +1,29 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
 
+	. "github.com/fspace/go-web/middlewares"
 	"github.com/fspace/go-web/models"
 )
+
+// 中间件
+func logging(f http.HandlerFunc) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		log.Println(request.URL.Path)
+		f(writer, request)
+	}
+}
+func foo(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "foo")
+}
+func bar(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "bar")
+}
 
 var r = mux.NewRouter()
 
@@ -75,6 +91,9 @@ func main() {
 	})
 
 	r.HandleFunc("/hello/{title}", helloHandler).Methods("GET")
+	r.HandleFunc("/foo", logging(foo))
+	r.HandleFunc("/bar", logging(bar))
+	r.HandleFunc("/hello", Chain(helloHandler, Method("GET"), Logging()))
 
 	err := http.ListenAndServe(":85", r)
 	if err != nil {
