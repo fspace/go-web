@@ -9,7 +9,46 @@ import (
 
 	. "github.com/fspace/go-web/middlewares"
 	"github.com/fspace/go-web/models"
+	"github.com/gorilla/sessions"
 )
+
+var (
+	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
+	key   = []byte("super-secret-key")
+	store = sessions.NewCookieStore(key)
+)
+
+func secret(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "cookie-name")
+
+	// Check if user is authenticated
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
+	// Print secret message
+	fmt.Fprintln(w, "The cake is a lie!")
+}
+
+func login(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "cookie-name")
+
+	// Authentication goes here
+	// ...
+
+	// Set user as authenticated
+	session.Values["authenticated"] = true
+	session.Save(r, w)
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "cookie-name")
+
+	// Revoke users authentication
+	session.Values["authenticated"] = false
+	session.Save(r, w)
+}
 
 // 中间件
 func logging(f http.HandlerFunc) http.HandlerFunc {
@@ -94,6 +133,11 @@ func main() {
 	r.HandleFunc("/foo", logging(foo))
 	r.HandleFunc("/bar", logging(bar))
 	r.HandleFunc("/hello", Chain(helloHandler, Method("GET"), Logging()))
+
+	// session cookie 相关：
+	r.HandleFunc("/secret", secret)
+	r.HandleFunc("/login", login)
+	r.HandleFunc("/logout", logout)
 
 	err := http.ListenAndServe(":85", r)
 	if err != nil {
