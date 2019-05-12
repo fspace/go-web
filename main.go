@@ -40,6 +40,7 @@ func main() {
 		// @see https://blog.rubylearning.com/go-web-programming-nesting-templates-f008418c6cc8
 		// @see https://astaxie.gitbooks.io/build-web-application-with-golang/content/en/07.4.html#nested-templates
 		// @see http://www.josephspurrier.com/how-to-use-template-blocks-in-go-1-6/
+		// 从 template 动作 切换到 block   防止未定义的模板 导致不显示（早期难道是err）  尽管可以在base模板中定义默认模板 但感觉还是不如block优雅
 		t, err := template.ParseFiles("views/layout.html", "views/index.html") // NOTE 顺序很重要哦
 		if err != nil {
 			log.Fatal(err)

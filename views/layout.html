@@ -3,13 +3,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ template "title" . }}</title>
+    <title>{{block "title" .}}Default Title{{end}}</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
-{{ template "content" .}}
+{{block "content" .}}This is the default body.{{end}}
 
 </body>
 </html>
 {{ end }}
+
