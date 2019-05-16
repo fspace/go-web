@@ -26,6 +26,8 @@ func main() {
 
 	xmlCtrl := controllers.XmlController{}
 	mux.HandleFunc("/xml", xmlCtrl.Index())
+	mux.HandleFunc("/xml/decode", xmlCtrl.Index())
+	mux.HandleFunc("/xml/marshal", xmlCtrl.Marshal())
 
 	server := &http.Server{
 		Addr:    "0.0.0.0:8080",
