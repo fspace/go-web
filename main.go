@@ -21,6 +21,12 @@ func main() {
 	csvCtrl := controllers.CsvController{}
 	mux.HandleFunc("/csv", csvCtrl.Index())
 
+	gobCtrl := controllers.GobController{}
+	mux.HandleFunc("/gob", gobCtrl.Index())
+
+	xmlCtrl := controllers.XmlController{}
+	mux.HandleFunc("/xml", xmlCtrl.Index())
+
 	server := &http.Server{
 		Addr:    "0.0.0.0:8080",
 		Handler: mux,
