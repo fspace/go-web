@@ -16,12 +16,21 @@ func (c *XmlController) Index() http.HandlerFunc {
 		Id   string `xml:"id,attr"`
 		Name string `xml:",chardata"`
 	}
+
+	type Comment struct {
+		Id      string `xml:"id,attr"`
+		Content string `xml:"content"`
+		Author  Author `xml:"author"`
+	}
+
 	type Post struct { //#A
 		XMLName xml.Name `xml:"post"`
 		Id      string   `xml:"id,attr"`
 		Content string   `xml:"content"`
 		Author  Author   `xml:"author"`
 		Xml     string   `xml:",innerxml"`
+
+		Comments []Comment `xml:"comments>comment"`
 	}
 
 	return func(writer http.ResponseWriter, request *http.Request) {
