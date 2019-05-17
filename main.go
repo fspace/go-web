@@ -29,6 +29,10 @@ func main() {
 	mux.HandleFunc("/xml/decode", xmlCtrl.Index())
 	mux.HandleFunc("/xml/marshal", xmlCtrl.Marshal())
 
+	jsonCtrl := controllers.JsonController{}
+	mux.HandleFunc("/json", jsonCtrl.Index())
+	mux.HandleFunc("/json/decoder", jsonCtrl.Decoder())
+
 	server := &http.Server{
 		Addr:    "0.0.0.0:8080",
 		Handler: mux,
